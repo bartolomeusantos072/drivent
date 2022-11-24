@@ -2,7 +2,7 @@
 
 Back-end for Driven.t, an event management solution.
 
-:)
+https://www.figma.com/file/86TbwAX92S6xNIHrcd7s8S/Drivent?node-id=0%3A1&t=geHl1xJVuBjTZPYL-0
 
 ## About
 
