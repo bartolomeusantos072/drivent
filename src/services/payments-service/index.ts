@@ -1,5 +1,5 @@
 import { notFoundError, unauthorizedError } from "@/errors";
-import paymentRepository, { PaymentParams } from "@/repositories/payment-repository";
+import paymentRepository from "@/repositories/payment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 
@@ -31,10 +31,13 @@ async function paymentProcess(ticketId: number, userId: number, cardData: CardPa
   await verifyTicketAndEnrollment(ticketId, userId);
 
   const ticket = await ticketRepository.findTickeWithTypeById(ticketId);
-
+  let accommodation = 0;
+  if(ticket.TicketType.includesHotel) {
+    accommodation = 350;
+  }
   const paymentData = {
     ticketId,
-    value: ticket.TicketType.price,
+    value: ticket.TicketType.price + accommodation,
     cardIssuer: cardData.issuer,
     cardLastDigits: cardData.number.toString().slice(-4),
   };
