@@ -1,6 +1,6 @@
 import { prisma } from "@/config";
 
-async function viewRooms() {
+async function quantityRooms() {
   return await prisma.room.groupBy({
     by: ["hotelId", "name"],
     _sum: {
@@ -11,9 +11,25 @@ async function viewRooms() {
 async function viewHotels( ) {
   return await prisma.hotel.findMany({ });
 }
+async function viewRooms(hotelId: number) {
+  return await prisma.room.findMany({
+    where: {
+      hotelId,
+    }
+  });
+}
+async function searchHotelId(hotelId: number) {
+  return await prisma.hotel.findFirst({
+    where: {
+      id: hotelId,
+    }
+  });
+}
 const hotelsRepository = {
   viewHotels,
   viewRooms,
+  quantityRooms,
+  searchHotelId,
 
 };
 export default hotelsRepository;

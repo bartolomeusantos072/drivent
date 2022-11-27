@@ -19,7 +19,7 @@ export async function provideHotelsView(userId: number) {
   }
   if (ticketsType.length > 0) {
     const hotels = await hotelsRepository.viewHotels();
-    const rooms = await hotelsRepository.viewRooms();
+    const rooms = await hotelsRepository.quantityRooms();
 
     return hotels.map(
       function(hotel) {
@@ -34,12 +34,40 @@ export async function provideHotelsView(userId: number) {
             }
           }
         }
-        return { name, image,  accommodation, avaliables };
+        return { name, image, accommodation, avaliables };
       });
   }
 }
+
+export async function provideHotelsViewId(userId: number, hotelId: number) {
+  const enrollment = await enrollmentRepository.findByUserId(userId);
+  if (!enrollment) {
+    throw notFoundError();
+  }
+  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!ticket || ticket.status !== "PAID") {
+    throw notFoundError();
+  }
+
+  const ticketsType = await ticketRepository.findTicketTypes();
+  if (!ticketsType && ticketsType.length === 0) {
+    throw notFoundError();
+  }
+
+  const hotel = await hotelsRepository.searchHotelId(hotelId);
+  if (!hotel) {
+    throw notFoundError();
+  }
+  const rooms = await hotelsRepository.viewRooms(hotelId);
+  if(!rooms && rooms.length === 0) {
+    throw notFoundError();
+  }
+  return { ...hotel, Room: rooms };
+}
+
 const hotelsService = {
   provideHotelsView,
+  provideHotelsViewId,
 };
 
 export default hotelsService;

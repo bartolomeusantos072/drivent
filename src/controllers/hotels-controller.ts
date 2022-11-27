@@ -13,7 +13,14 @@ export async function getPaidTicketWithAccommodation(req: AuthenticatedRequest, 
   }
 }
 
-export function getHotelsId(req: AuthenticatedRequest, res: Response) {
-  console.log(req.userId);
+export async function getHotelsId(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const { hotelId } = (req.params);
+  try {
+    const viewHotelsId = await hotelsService.provideHotelsViewId(userId, Number(hotelId));
+    return res.status(httpStatus.OK).send(viewHotelsId);
+  } catch (error) {
+    return res.sendStatus(httpStatus.NOT_FOUND); 
+  }
 }
 
