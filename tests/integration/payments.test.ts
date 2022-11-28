@@ -205,7 +205,7 @@ describe("POST /payments/process", () => {
       expect(response.body).toEqual({
         id: expect.any(Number),
         ticketId: ticket.id,
-        value: ticketType.price,
+        value: ticketType.includesHotel ? ticketType.price+350 : ticketType.price,
         cardIssuer: body.cardData.issuer,
         cardLastDigits: body.cardData.number.slice(-4),
         createdAt: expect.any(String),

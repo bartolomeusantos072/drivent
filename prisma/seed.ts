@@ -100,7 +100,7 @@ async function main() {
      data: { 
       name: event.title + "ticket",
       price: 250,
-      isRemote: true,
+      isRemote: false,
       includesHotel: true,
     },
     })
@@ -134,9 +134,9 @@ async function main() {
     })
   }
  
-  let statusTicket = await prisma.ticket.findFirst();
-  if(statusTicket && payments){
-    statusTicket = await prisma.ticket.update({
+  let updateTicket = await prisma.ticket.findFirst();
+  if(updateTicket && payments){
+    updateTicket = await prisma.ticket.update({
       where: {
         id: ticket.id,
       },

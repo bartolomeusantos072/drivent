@@ -13,30 +13,31 @@ export async function provideHotelsView(userId: number) {
     throw notFoundError();
   }
 
-  const ticketsType = await ticketRepository.findTicketTypes();
+  const ticketsType = await ticketRepository.findTicketTypesPresential();
   if (!ticketsType) {
     throw notFoundError();
   }
-  if (ticketsType.length > 0) {
-    const hotels = await hotelsRepository.viewHotels();
-    const rooms = await hotelsRepository.quantityRooms();
 
-    return hotels.map(
-      function(hotel) {
-        const { name, image } = hotel;
-        let avaliables = 0;
-        const accommodation: string[] = [];
-        if (rooms) {
-          for (let i = 0; i < rooms.length; i++) {
-            if (rooms[i].hotelId === hotel?.id) {
-              avaliables = avaliables + Number(rooms[i]._sum.capacity);
-              accommodation.push(rooms[i].name.toString());
-            }
+  if (!ticketsType.length ) throw notFoundError();
+
+  const hotels = await hotelsRepository.viewHotels();
+  const rooms = await hotelsRepository.quantityRooms();
+
+  return hotels.map(
+    function(hotel) {
+      const { name, image } = hotel;
+      let avaliables = 0;
+      const accommodation: string[] = [];
+      if (rooms) {
+        for (let i = 0; i < rooms.length; i++) {
+          if (rooms[i].hotelId === hotel?.id) {
+            avaliables = avaliables + Number(rooms[i]._sum.capacity);
+            accommodation.push(rooms[i].name.toString());
           }
         }
-        return { name, image, accommodation, avaliables };
-      });
-  }
+      }
+      return { name, image, accommodation, avaliables };
+    });
 }
 
 export async function provideHotelsViewId(userId: number, hotelId: number) {
