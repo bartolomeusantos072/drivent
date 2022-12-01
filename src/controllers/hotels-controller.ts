@@ -5,8 +5,10 @@ import hotelsService from  "@/services/hotels-service";
 
 export async function getPaidTicketWithAccommodation(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
+ 
   try {
     const viewHotels = await hotelsService.provideHotelsView(userId);
+  
     return res.status(httpStatus.OK).send(viewHotels);
   } catch (error) {
     return res.sendStatus(httpStatus.NOT_FOUND);    

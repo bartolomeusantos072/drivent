@@ -12,7 +12,6 @@ export async function provideHotelsView(userId: number) {
   if (!ticket || ticket.status !== "PAID") {
     throw notFoundError();
   }
-
   const ticketsType = await ticketRepository.findTicketTypesPresential();
   if (!ticketsType) {
     throw notFoundError();
@@ -24,7 +23,7 @@ export async function provideHotelsView(userId: number) {
   const rooms = await hotelsRepository.quantityRooms();
 
   return hotels.map(
-    function(hotel) {
+    function(hotel: { id?: number; name?: string; image?: string; }) {
       const { name, image } = hotel;
       let avaliables = 0;
       const accommodation: string[] = [];
@@ -32,7 +31,16 @@ export async function provideHotelsView(userId: number) {
         for (let i = 0; i < rooms.length; i++) {
           if (rooms[i].hotelId === hotel?.id) {
             avaliables = avaliables + Number(rooms[i]._sum.capacity);
-            accommodation.push(rooms[i].name.toString());
+            
+            if(rooms[i]._sum.capacity === 1 && accommodation.indexOf("Single")< 0) {
+              accommodation.push("Single");
+            }
+            if(rooms[i]._sum.capacity === 2 && accommodation.indexOf("Double")< 0) {
+              accommodation.push("Double");
+            }
+            if(rooms[i]._sum.capacity === 3 && accommodation.indexOf("Triple")< 0) {
+              accommodation.push("Triple");
+            }
           }
         }
       }

@@ -8,13 +8,29 @@ async function quantityRooms() {
     },
   });
 }
+
 async function viewHotels( ) {
-  return await prisma.hotel.findMany({ });
+  return await prisma.hotel.findMany({});
+}
+
+async function viewHotel(hotelId: number) {
+  return await prisma.hotel.findUnique({
+    where: {
+      id: hotelId,
+    },
+  });
 }
 async function viewRooms(hotelId: number) {
   return await prisma.room.findMany({
     where: {
       hotelId,
+    }
+  });
+}
+async function viewRoom(idRoom: number) {
+  return await prisma.room.findUnique({
+    where: {
+      id: idRoom,
     }
   });
 }
@@ -25,11 +41,13 @@ async function searchHotelId(hotelId: number) {
     }
   });
 }
+
 const hotelsRepository = {
   viewHotels,
   viewRooms,
   quantityRooms,
   searchHotelId,
-
+  viewHotel,
+  viewRoom
 };
 export default hotelsRepository;
