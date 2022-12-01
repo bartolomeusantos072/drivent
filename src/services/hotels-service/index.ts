@@ -67,7 +67,7 @@ export async function provideHotelsViewId(userId: number, hotelId: number) {
   if (!hotel) {
     throw notFoundError();
   }
-  const rooms = await hotelsRepository.viewRooms(hotelId);
+  const rooms = await hotelsRepository.searchRooms(hotelId);
   if(!rooms && rooms.length === 0) {
     throw notFoundError();
   }
