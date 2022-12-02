@@ -18,8 +18,8 @@ export async function postBookingId(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
   const idRoom = Number(req.body.roomId);
   try {
-    const sendBooking = await bookingService.postBookingId(userId, idRoom);
-    return res.status(httpStatus.OK).send(sendBooking);   
+    const bookingId = await bookingService.postBookingId(userId, idRoom);
+    return res.status(httpStatus.OK).send(bookingId.toString());   
   } catch (error) {
     return res.sendStatus(httpStatus.FORBIDDEN);    
   }
@@ -30,8 +30,8 @@ export async function putBookingId(req: AuthenticatedRequest, res: Response) {
   const idRoom = Number(req.body.roomId);
   const idBookingId = Number(req.params.bookingId);
   try {
-    const sendBooking = await bookingService.putBookingId(userId, idRoom, idBookingId);
-    return res.status(httpStatus.OK).send(sendBooking);   
+    const changeBooking = await bookingService.putBookingId(userId, idRoom, idBookingId);
+    return res.status(httpStatus.OK).send(changeBooking.toLocaleString());   
   } catch (error) {
     return res.sendStatus(httpStatus.FORBIDDEN);    
   }

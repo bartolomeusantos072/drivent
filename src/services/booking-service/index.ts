@@ -8,6 +8,7 @@ import ticketRepository from "@/repositories/ticket-repository";
 export async function getBookingId(userId: number) {
   const enrollment = await enrollmentRepository.findByUserId(userId);
   if (!enrollment) throw notFoundError();
+  
   const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
   if (!ticket || ticket.status !== "PAID") throw notFoundError();
   
@@ -26,10 +27,10 @@ export async function getBookingId(userId: number) {
   if (!hotel)  throw notFoundError();
   
   const countBooking = await bookingRepository.countBooking(room.id);
-  if(!countBooking || (room.capacity - countBooking.length <= 0)) throw notFoundError();
+  if(!countBooking || (room.capacity - countBooking <= 0)) throw notFoundError();
   
   const acommodation = acommodadion(room.name, room.capacity);
-  const myRoom = { image: hotel.image, hotel: hotel.name, ...acommodation, sharedRoom: (countBooking.length-1) };
+  const myRoom = { image: hotel.image, hotel: hotel.name, ...acommodation, sharedRoom: (countBooking-1) };
   return { id: booking.id, Room: myRoom  };
 }
 
@@ -45,22 +46,20 @@ export async function postBookingId(userId: number, roomId: number) {
 
   if (!ticketsType.includesHotel && ticket.status !== "PAID") throw Forbidden();
 
-  const searchBooking = await bookingRepository.searchBookingByRoomId(roomId);
-  if (!searchBooking) throw notFoundError();
+  const room = await hotelsRepository.searchHotelByRoomId(roomId);
+  if (!room) throw notFoundError();
 
-  const countBooking = await bookingRepository.countBooking(roomId);
-  if ((searchBooking.capacity - countBooking.length) <= 0) throw Forbidden();
-
-  const hotel = await hotelsRepository.viewHotel(searchBooking.hotelId);
+  const hotel = await hotelsRepository.viewHotel(room.id);
   if (!hotel) throw Forbidden();
 
-  const room = await hotelsRepository.searchHotelByRoomId(roomId);
-  if (!room) throw Forbidden();
+  const checkBookingByUserId = await bookingRepository.countBookingByUserId(userId);
+  if(checkBookingByUserId != 0) throw Forbidden();
 
-  await bookingRepository.postBookingId(userId, roomId);
+  const availabilityBooking = await bookingRepository.countBooking(roomId);
+  if ((room.capacity - availabilityBooking) <= 0) throw Forbidden();
 
-  const acommodation = acommodadion(room.name, room.capacity,);
-  return { hotelName: hotel.name, acommodation, sharedRoom: countBooking.length };
+  const booking = await bookingRepository.postBookingId(userId, roomId);
+  return booking.id;
 }
 
 export async function putBookingId(userId: number, roomId: number, bookingId: number) {
@@ -78,14 +77,14 @@ export async function putBookingId(userId: number, roomId: number, bookingId: nu
   const searchBooking = await bookingRepository.searchBookingId(bookingId);
   if (!searchBooking) throw notFoundError();
 
-  const availabilityRoom = await bookingRepository.searchBookingByRoomId(roomId);
-  if (!availabilityRoom) throw notFoundError();
+  const room = await bookingRepository.searchBookingByRoomId(roomId);
+  if (!room) throw notFoundError();
 
-  const countBooking = await bookingRepository.countBooking(roomId);
-  if (availabilityRoom.capacity - countBooking.length <= 0) throw Forbidden();
+  const availabilityBooking = await bookingRepository.countBooking(roomId);
+  if ((room.capacity - availabilityBooking) <= 0) throw Forbidden();
 
   const updateBooking = await bookingRepository.putBookingId(userId, roomId, bookingId);
-  return updateBooking;
+  return updateBooking.id;
 }
 
 function acommodadion(room: string, capacity: number) {
