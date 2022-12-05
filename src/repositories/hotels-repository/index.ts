@@ -8,11 +8,9 @@ async function quantityRooms() {
     },
   });
 }
-
 async function viewHotels( ) {
   return await prisma.hotel.findMany({});
 }
-
 async function searchRooms(hotelId: number) {
   return await prisma.room.findMany({
     where: {
@@ -41,13 +39,20 @@ async function viewHotel(hotelId: number) {
     },
   });
 }
-
+async function countRoom(hotelId: number) {
+  return prisma.room.count({
+    where: {
+      hotelId,
+    }
+  });
+}
 const hotelsRepository = {
   viewHotels,
   quantityRooms,
   searchHotelId,
   viewHotel,
   searchRooms,
-  searchHotelByRoomId
+  searchHotelByRoomId,
+  countRoom
 };
 export default hotelsRepository;

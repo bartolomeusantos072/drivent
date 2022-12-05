@@ -35,10 +35,10 @@ async function searchBookingByUserId(userId: number) {
   });
 }
 
-async function countBooking(roomId: number) {
+async function countBooking(userId: number) {
   return prisma.booking.count({
     where: {
-      roomId
+      userId
     },
   });
 }

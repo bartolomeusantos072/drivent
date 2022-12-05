@@ -6,52 +6,30 @@ import hotelsRepository from "@/repositories/hotels-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 
 export async function getBookingId(userId: number) {
-  const enrollment = await enrollmentRepository.findByUserId(userId);
-  if (!enrollment) throw notFoundError();
-  
-  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
-  if (!ticket || ticket.status !== "PAID") throw notFoundError();
-  
-  const ticketsType = await ticketRepository.ticketsTypeIsPresentialCheck(ticket.ticketTypeId);
-  if (!ticketsType) throw notFoundError();
-  
-  if (!ticketsType.includesHotel && ticket.status !== "PAID") throw notFoundError();
-  
+  const countBooking = await bookingRepository.countBooking(userId);
+  if(countBooking!== 1 ) throw notFoundError();
+
   const booking = await bookingRepository.searchBookingByUserId(userId);
   if (!booking)  throw notFoundError();
   
   const room = await hotelsRepository.searchHotelByRoomId(booking.roomId);
-  if (!room)  throw notFoundError();
+  if (!room || (room.capacity - countBooking <= 0)) throw notFoundError();
   
   const hotel = await hotelsRepository.viewHotel(room.hotelId);
   if (!hotel)  throw notFoundError();
-  
-  const countBooking = await bookingRepository.countBooking(room.id);
-  if(!countBooking || (room.capacity - countBooking <= 0)) throw notFoundError();
-  
+
   const acommodation = acommodadion(room.name, room.capacity);
   const myRoom = { image: hotel.image, hotel: hotel.name, ...acommodation, sharedRoom: (countBooking-1) };
   return { id: booking.id, Room: myRoom  };
 }
 
 export async function postBookingId(userId: number, roomId: number) {
-  const enrollment = await enrollmentRepository.findByUserId(userId);
-  if (!enrollment) throw Forbidden();
-
-  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
-  if (!ticket || ticket.status !== "PAID") throw Forbidden();
-
-  const ticketsType = await ticketRepository.ticketsTypeIsPresentialCheck(ticket.ticketTypeId);
-  if (!ticketsType) throw Forbidden();
-
-  if (!ticketsType.includesHotel && ticket.status !== "PAID") throw Forbidden();
+  const hotel = await hotelsRepository.viewHotel(roomId);
+  if (!hotel) throw notFoundError();
 
   const room = await hotelsRepository.searchHotelByRoomId(roomId);
   if (!room) throw notFoundError();
-
-  const hotel = await hotelsRepository.viewHotel(room.id);
-  if (!hotel) throw Forbidden();
-
+  
   const checkBookingByUserId = await bookingRepository.countBookingByUserId(userId);
   if(checkBookingByUserId != 0) throw Forbidden();
 

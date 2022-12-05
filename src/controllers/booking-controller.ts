@@ -3,25 +3,23 @@ import { Response } from "express";
 import httpStatus from "http-status";
 import bookingService from  "@/services/booking-service";
 
-export async function getBookingId(req: AuthenticatedRequest, res: Response) {
-  const { userId } = req;
-
-  try {
-    const viewBooking = await bookingService.getBookingId(userId);
-    return res.status(httpStatus.OK).send(viewBooking);
-  } catch (error) {
-    return res.sendStatus(httpStatus.NOT_FOUND);    
-  }
-}
-
 export async function postBookingId(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
-  const idRoom = Number(req.body.roomId);
+  
+  if( Object.keys(req.body).indexOf("roomId") !== 0) {
+    return res.sendStatus(httpStatus.NOT_FOUND);    
+  }
+
+  const { roomId } = req.body;
+  if(!Number(roomId) || Number(roomId) <= 0 || !roomId) {
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
+
   try {
-    const bookingId = await bookingService.postBookingId(userId, idRoom);
+    const bookingId = await bookingService.postBookingId(userId, roomId);
     return res.status(httpStatus.OK).send(bookingId.toString());   
   } catch (error) {
-    return res.sendStatus(httpStatus.FORBIDDEN);    
+    return res.sendStatus(httpStatus.NOT_FOUND);    
   }
 }
 
@@ -37,3 +35,16 @@ export async function putBookingId(req: AuthenticatedRequest, res: Response) {
   }
 }
 
+export async function getBookingId(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  if(!userId) {
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
+  
+  try {
+    const viewBooking = await bookingService.getBookingId(userId);
+    return res.status(httpStatus.OK).send(viewBooking);
+  } catch (error) {
+    return res.sendStatus(httpStatus.NOT_FOUND);    
+  }
+}

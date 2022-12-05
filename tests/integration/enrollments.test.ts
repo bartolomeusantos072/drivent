@@ -1,13 +1,13 @@
 import app, { init } from "@/app";
 import { prisma } from "@/config";
-import { generateCPF, getStates } from "@brazilian-utils/brazilian-utils";
 import faker from "@faker-js/faker";
-import dayjs from "dayjs";
 import httpStatus from "http-status";
-import * as jwt from "jsonwebtoken";
 import supertest from "supertest";
-import { createEnrollmentWithAddress, createUser, createhAddressWithCEP } from "../factories";
+import * as jwt from "jsonwebtoken";
 import { cleanDb, generateValidToken } from "../helpers";
+import { createEnrollmentWithAddress, createUser, createhAddressWithCEP } from "../factories";
+import dayjs from "dayjs";
+import { generateCPF, getStates } from "@brazilian-utils/brazilian-utils";
 
 beforeAll(async () => {
   await init();
