@@ -1,4 +1,5 @@
 import { prisma } from "@/config";
+import { createUser } from "./users-factory";
 
 export async function createBooking(userId: number, roomId: number) {  
   return prisma.booking.create({
@@ -6,6 +7,18 @@ export async function createBooking(userId: number, roomId: number) {
       userId,
       roomId,
     },
+  });
+}
+
+export async function createManyBooking(roomId: number, capacity: number) {
+  const booking =[];
+
+  for(let i=0; i<capacity; i++) {
+    booking.push({  userId: (await createUser()).id, roomId });
+  }
+
+  return prisma.booking.createMany({
+    data: booking
   });
 }
 

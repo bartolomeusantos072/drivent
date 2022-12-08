@@ -12,16 +12,6 @@ export async function createRoom(hotelId: number) {
   });
 }
 
-export async function createManyRooms(hotelId: number) {
-  return  await prisma.room.createMany({
-    data: [
-      {  name: "Single", capacity: 6, hotelId, },
-      {  name: "Double", capacity: 6, hotelId, },
-      {  name: "Triple", capacity: 2, hotelId, },
-    ]
-  });
-}
-
 export async function quantityRooms(hotelId: number) {
   return await prisma.room.groupBy({
     where: {
