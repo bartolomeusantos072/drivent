@@ -9,7 +9,8 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: "module",
   },
-  plugins: ["@typescript-eslint", "boundaries"],
+  plugins: ['@typescript-eslint', "boundaries"],
+  root:true,
   settings: {
     "import/resolver": {
       typescript: {

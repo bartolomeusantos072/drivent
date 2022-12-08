@@ -89,7 +89,6 @@ describe("GET /payments", () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketType();
       const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
-
       const payment = await createPayment(ticket.id, ticketType.price);
 
       const response = await server.get(`/payments?ticketId=${ticket.id}`).set("Authorization", `Bearer ${token}`);
@@ -205,7 +204,7 @@ describe("POST /payments/process", () => {
       expect(response.body).toEqual({
         id: expect.any(Number),
         ticketId: ticket.id,
-        value: ticketType.price,
+        value: ticketType.includesHotel ? ticketType.price+350 : ticketType.price,
         cardIssuer: body.cardData.issuer,
         cardLastDigits: body.cardData.number.slice(-4),
         createdAt: expect.any(String),
